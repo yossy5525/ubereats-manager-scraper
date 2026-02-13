@@ -10,7 +10,7 @@
   "dependencies": {
     "apify": "^3.0.0",
     "crawlee": "^3.0.0",
-    "playwright": "^1.40.0",
+    "playwright": "*",
     "csv-parse": "^5.5.0"
   },
   "author": "disarming_output",
