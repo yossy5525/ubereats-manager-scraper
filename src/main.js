@@ -38,25 +38,26 @@ try {
     
     console.log(`✅ ${cookies.length}個のCookieを読み込みました`);
     
-    // Cookie有効期限チェック
+    // 重要な認証Cookie（sid）の有効期限チェック
     const now = Date.now() / 1000;
-    let minDaysRemaining = Infinity;
+    const sidCookie = cookies.find(c => c.name === 'sid');
     
-    for (const cookie of cookies) {
-        if (cookie.expirationDate && cookie.expirationDate > 0) {
-            const daysRemaining = Math.floor((cookie.expirationDate - now) / 86400);
-            if (daysRemaining < minDaysRemaining) {
-                minDaysRemaining = daysRemaining;
-            }
-        }
+    if (!sidCookie) {
+        throw new Error('🔴 認証Cookie（sid）が見つかりません。再取得が必要です。');
     }
     
-    if (minDaysRemaining <= 0) {
-        throw new Error('🔴 Cookie期限切れ！手動で再取得してください。');
-    } else if (minDaysRemaining <= 7) {
-        console.log(`⚠️  Cookie残り${minDaysRemaining}日。まもなく期限切れです。`);
+    if (sidCookie.expirationDate && sidCookie.expirationDate > 0) {
+        const daysRemaining = Math.floor((sidCookie.expirationDate - now) / 86400);
+        
+        if (daysRemaining <= 0) {
+            throw new Error('🔴 認証Cookie（sid）が期限切れです。手動で再取得してください。');
+        } else if (daysRemaining <= 7) {
+            console.log(`⚠️  認証Cookie（sid）残り${daysRemaining}日。まもなく期限切れです。`);
+        } else {
+            console.log(`✅ 認証Cookie（sid）有効期限: あと${daysRemaining}日`);
+        }
     } else {
-        console.log(`✅ Cookie有効期限: あと${minDaysRemaining}日`);
+        console.log(`✅ 認証Cookie（sid）はセッションCookieです`);
     }
     
     // ========================================
@@ -167,7 +168,11 @@ try {
             log.info(`   ログイン状態: 成功`);
             log.info(`   ページタイトル: ${title}`);
             log.info(`   Cookie数: ${cookies.length}個`);
-            log.info(`   Cookie有効期限: あと${minDaysRemaining}日`);
+            
+            const sidDays = sidCookie.expirationDate > 0 
+                ? Math.floor((sidCookie.expirationDate - now) / 86400)
+                : 'セッション';
+            log.info(`   認証Cookie有効期限: ${sidDays}`);
         },
         
         maxRequestsPerCrawl: 1,
