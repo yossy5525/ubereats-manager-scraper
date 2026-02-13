@@ -1,6 +1,6 @@
 {
   "name": "ubereats-manager-scraper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "UberEats Manager data collector with Cookie injection",
   "main": "src/main.js",
@@ -10,7 +10,8 @@
   "dependencies": {
     "apify": "^3.0.0",
     "crawlee": "^3.0.0",
-    "playwright": "^1.40.0"
+    "playwright": "^1.40.0",
+    "csv-parse": "^5.5.0"
   },
   "author": "disarming_output",
   "license": "ISC"
