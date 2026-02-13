@@ -17,19 +17,19 @@ try {
     // ========================================
     const input = await Actor.getInput() || {};
     const {
-        cookieStoreName = 'ubereats-session',
+        cookieStoreId = 'nvTNFxnnM87yDL9jC',  // Store ID指定
         storeId = '9d065554-e3c2-5f05-9869-3e2666b78fa2',
         headless = true,
         debugMode = true,
     } = input;
     
-    console.log('📥 Input:', { cookieStoreName, storeId, headless, debugMode });
+    console.log('📥 Input:', { cookieStoreId, storeId, headless, debugMode });
     
     // ========================================
     // STEP 2: Cookie読み込み
     // ========================================
     console.log('🍪 Cookieを読み込み中...');
-    const cookieStore = await Actor.openKeyValueStore(cookieStoreName);
+    const cookieStore = await Actor.openKeyValueStore(cookieStoreId);
     const cookies = await cookieStore.getValue('cookies');
     
     if (!cookies || !Array.isArray(cookies)) {
