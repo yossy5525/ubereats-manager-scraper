@@ -129,6 +129,12 @@ try {
             // さらに少し上にスクロール（最下部だと見えない可能性があるため）
             await page.evaluate(() => window.scrollBy(0, -500));
             await page.waitForTimeout(2000);
+            
+            // デバッグ: スクリーンショット保存
+            await Actor.setValue('screenshot_before_download', await page.screenshot({ fullPage: true }), {
+                contentType: 'image/png',
+            });
+            console.log('   📸 スクリーンショット保存（ダウンロード前）');
 
             const locationDownloadPromise = page.waitForEvent('download');
             
