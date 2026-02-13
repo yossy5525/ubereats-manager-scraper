@@ -80,11 +80,25 @@ try {
             async ({ page }, goToOptions) => {
                 console.log('🍪 Cookieをブラウザに注入中...', goToOptions.url);
                 
-                // sameSite属性を正規化（Playwrightの要件に合わせる）
-                const normalizedCookies = cookies.map(cookie => ({
-                    ...cookie,
-                    sameSite: cookie.sameSite === 'unspecified' || !cookie.sameSite ? 'Lax' : cookie.sameSite,
-                }));
+                // sameSite属性を正規化（Playwrightの要件: Strict | Lax | None のみ）
+                const normalizedCookies = cookies.map(cookie => {
+                    let sameSite = cookie.sameSite;
+                    
+                    // 不正な値を Lax に正規化
+                    if (!sameSite || sameSite === 'unspecified' || sameSite === 'no_restriction') {
+                        sameSite = 'Lax';
+                    }
+                    
+                    // 大文字小文字を正規化
+                    if (sameSite.toLowerCase() === 'strict') sameSite = 'Strict';
+                    if (sameSite.toLowerCase() === 'lax') sameSite = 'Lax';
+                    if (sameSite.toLowerCase() === 'none') sameSite = 'None';
+                    
+                    return {
+                        ...cookie,
+                        sameSite,
+                    };
+                });
                 
                 await page.context().addCookies(normalizedCookies);
                 console.log(`✅ ${cookies.length}個のCookieを注入しました`);
