@@ -120,6 +120,26 @@ try {
 
             console.log('✅ ログイン成功！');
             console.log('');
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            // 店舗選択（全店舗→個別店舗）
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            console.log('🏪 店舗を選択中...');
+            
+            // 店舗ドロップダウンをクリック
+            await page.locator('button:has-text("全店舗"), button:has-text("店舗")').first().click();
+            await page.waitForTimeout(1000);
+            
+            // 対象店舗のラジオボタンを選択（店舗名で検索）
+            await page.locator(`label:has-text("${storeName}")`).click();
+            await page.waitForTimeout(500);
+            
+            // 「適用する」ボタンをクリック
+            await page.locator('button:has-text("適用")').click();
+            await page.waitForTimeout(3000); // ページ再読み込み待機
+            
+            console.log(`✅ 店舗選択完了: ${storeName}`);
+            console.log('');
             console.log('📍 位置情報CSVをダウンロード中...');
             
             // ページ下部へスクロール（位置情報セクションは最下部付近）
