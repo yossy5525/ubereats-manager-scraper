@@ -79,7 +79,14 @@ try {
         preNavigationHooks: [
             async ({ page }, goToOptions) => {
                 console.log('🍪 Cookieをブラウザに注入中...', goToOptions.url);
-                await page.context().addCookies(cookies);
+                
+                // sameSite属性を正規化（Playwrightの要件に合わせる）
+                const normalizedCookies = cookies.map(cookie => ({
+                    ...cookie,
+                    sameSite: cookie.sameSite === 'unspecified' || !cookie.sameSite ? 'Lax' : cookie.sameSite,
+                }));
+                
+                await page.context().addCookies(normalizedCookies);
                 console.log(`✅ ${cookies.length}個のCookieを注入しました`);
             },
         ],
