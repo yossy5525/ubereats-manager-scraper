@@ -1,0 +1,10 @@
+{
+  "actorSpecification": 1,
+  "name": "ubereats-manager-data-collector",
+  "title": "UberEats Manager Data Collector",
+  "description": "Collects customer analytics data from UberEats Manager using stored cookies",
+  "version": "0.1",
+  "buildTag": "latest",
+  "dockerContext": "./",
+  "dockerfile": "./Dockerfile"
+}
