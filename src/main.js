@@ -122,20 +122,25 @@ try {
             console.log('');
             console.log('📍 位置情報CSVをダウンロード中...');
             
-            await page.evaluate(() => {
-                const element = document.evaluate(
-                    "//*[contains(text(), '注文者の位置情報')]",
-                    document,
-                    null,
-                    XPathResult.FIRST_ORDERED_NODE_TYPE,
-                    null
-                ).singleNodeValue;
-                if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
+            // ページ下部へスクロール（位置情報セクションは最下部付近）
+            await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+            await page.waitForTimeout(3000);
+            
+            // さらに少し上にスクロール（最下部だと見えない可能性があるため）
+            await page.evaluate(() => window.scrollBy(0, -500));
             await page.waitForTimeout(2000);
 
             const locationDownloadPromise = page.waitForEvent('download');
-            await page.locator('text=注文者の位置情報').locator('..').locator('button:has-text("ダウンロード")').click();
+            
+            // すべてのダウンロードボタンを取得し、最初の1つをクリック（位置情報用）
+            const downloadButtons = await page.locator('button:has-text("ダウンロード")').all();
+            console.log(`   見つかったダウンロードボタン数: ${downloadButtons.length}`);
+            
+            if (downloadButtons.length === 0) {
+                throw new Error('❌ ダウンロードボタンが見つかりません');
+            }
+            
+            await downloadButtons[0].click();
             
             const locationDownload = await locationDownloadPromise;
             console.log(`✅ 位置情報CSVダウンロード開始: ${locationDownload.suggestedFilename()}`);
@@ -189,20 +194,21 @@ try {
             console.log('');
             console.log('📈 注文者グループの傾向CSVをダウンロード中...');
             
-            await page.evaluate(() => {
-                const element = document.evaluate(
-                    "//*[contains(text(), '注文者グループの傾向')]",
-                    document,
-                    null,
-                    XPathResult.FIRST_ORDERED_NODE_TYPE,
-                    null
-                ).singleNodeValue;
-                if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
+            // 少し上にスクロール
+            await page.evaluate(() => window.scrollBy(0, -300));
             await page.waitForTimeout(2000);
 
             const trendsDownloadPromise = page.waitForEvent('download');
-            await page.locator('text=注文者グループの傾向').locator('..').locator('button:has-text("ダウンロード")').click();
+            
+            // 2つ目のダウンロードボタンをクリック（傾向用）
+            const downloadButtons2 = await page.locator('button:has-text("ダウンロード")').all();
+            console.log(`   見つかったダウンロードボタン数: ${downloadButtons2.length}`);
+            
+            if (downloadButtons2.length < 2) {
+                throw new Error('❌ 傾向データのダウンロードボタンが見つかりません');
+            }
+            
+            await downloadButtons2[1].click();
             
             const trendsDownload = await trendsDownloadPromise;
             console.log(`✅ 傾向CSVダウンロード開始: ${trendsDownload.suggestedFilename()}`);
